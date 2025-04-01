@@ -12,6 +12,7 @@ boards = [None, None]
 ships = [None, None]
 turn = 0
 
+
 def send_json(conn, obj):
     message = json.dumps(obj) + "\n"
     conn.sendall(message.encode())
@@ -21,6 +22,7 @@ def handle_client(conn, player_id):
     try:
         data = conn.recv(8192).decode()
         parsed = json.loads(data)
+        print(f"parsed: {parsed}")
 
         boards[player_id] = parsed['board']
         ships[player_id] = parsed['ships']
@@ -79,7 +81,7 @@ def handle_client(conn, player_id):
 
                 turn = 1 - player_id
                 send_json(clients[turn], {"msg": "Twoja tura"})
-                send_json(clients[player_id], {"msg": "Tura przeciwnika"})
+                send_json(clients[player_id], {"msg": f"{result.capitalize()}! Tura przeciwnika"})
 
             except Exception as e:
                 print(f"[SERVER] Błąd podczas strzału: {e}")

@@ -181,33 +181,8 @@ def main():
                             if opponent_board[grid_y][grid_x] == "~":
                                 shot = {"x": grid_x, "y": grid_y}
                                 client_socket.sendall((json.dumps(shot) + "\n").encode())
-                                response_line = client_socket.makefile("r").readline()
-                                response = json.loads(response_line.strip())
-
-                                msg = response["msg"]
-                                x, y = response["x"], response["y"]
-
-                                if msg == "trafiony":
-                                    opponent_board[y][x] = "X"
-                                    set_info("Trafiony!")
-                                elif msg == "trafiony zatopiony":
-                                    opponent_board[y][x] = "X"
-                                    set_info("Trafiony zatopiony! 💥🚢")
-                                elif msg == "pudło":
-                                    opponent_board[y][x] = "O"
-                                    set_info("Pudło 😞")
-                                elif msg == "Wygrałeś!":
-                                    opponent_board[y][x] = "X"
-                                    set_info("Wygrałeś! 🏆")
-                                    game_over = True
-                                elif msg == "Przegrałeś.":
-                                    opponent_board[y][x] = "X"
-                                    set_info("Przegrałeś... 😔")
-                                    game_over = True
-
                                 my_turn = False
-
-
+                                set_info("Czekaj na odpowiedź przeciwnika...")
 
 if __name__ == "__main__":
     main()

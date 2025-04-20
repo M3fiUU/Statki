@@ -18,7 +18,7 @@ BLACK = (0, 0, 0)
 RED = (200, 0, 0)
 WHITE_HIT = (220, 220, 220)
 
-HOST = "127.0.0.1"
+HOST = "0.0.0.0"
 PORT = 5555
 
 
@@ -68,17 +68,17 @@ def recv_thread(file, opponent_board, set_info, update_player_board):
                     set_info("Trafiony!")
                 elif msg == "trafiony zatopiony":
                     opponent_board[y][x] = "X"
-                    set_info("Trafiony zatopiony! 💥🚢")
+                    set_info("Trafiony zatopiony!")
                 elif msg == "pudło":
                     opponent_board[y][x] = "O"
-                    set_info("Pudło 😞")
+                    set_info("Pudło")
                 elif msg == "Wygrałeś!":
                     opponent_board[y][x] = "X"
-                    set_info("Wygrałeś! 🏆")
+                    set_info("Wygrałeś!")
                     game_over = True
                 elif msg == "Przegrałeś.":
                     opponent_board[y][x] = "X"
-                    set_info("Przegrałeś... 😔")
+                    set_info("Przegrałeś...")
                     game_over = True
                 elif msg.startswith("Gra się rozpoczęła") or msg.startswith("Wszystkie statki"):
                     set_info(msg)

@@ -4,7 +4,7 @@ import json
 import time
 from game_logic import check_hit, all_ships_sunk, is_ship_sunk
 
-HOST = '0.0.0.0'
+HOST = "0.0.0.0"
 PORT = 5555
 
 clients = [None, None]
@@ -17,13 +17,12 @@ def send_json(conn, obj):
     message = json.dumps(obj) + "\n"
     conn.sendall(message.encode())
 
-def handle_client(conn, player_id):
+def handle_client(conn, player_id): #jeden gracz odbiera dane
     global turn
     try:
         data = conn.recv(8192).decode()
         parsed = json.loads(data)
-        print(f"parsed: {parsed}")
-
+    
         boards[player_id] = parsed['board']
         ships[player_id] = parsed['ships']
         clients[player_id] = conn
@@ -38,7 +37,7 @@ def handle_client(conn, player_id):
                 if pid == 0:
                     send_json(clients[pid], {"msg": "Twoja tura"})
                 else:
-                    send_json(clients[pid], {"msg": "Tura przeciwnika"})
+                    send_json(clients[pid], {"msg": "Tura przeciwnika"})  #czyja tura 
 
         game_over = False
         while not game_over:
@@ -47,7 +46,7 @@ def handle_client(conn, player_id):
                 continue
 
             try:
-                shot_data = conn.recv(1024).decode()
+                shot_data = conn.recv(1024).decode() #odbieranie dancych
                 if not shot_data.strip():
                     break
                 shot = json.loads(shot_data)
@@ -94,13 +93,13 @@ def handle_client(conn, player_id):
         print(f"[SERVER] Gracz {player_id} rozłączony.")
 
 def start():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #socket tcp
     server.bind((HOST, PORT))
     server.listen(2)
     print(f"[SERVER] Serwer działa na {HOST}:{PORT}")
 
     player_id = 0
-    while player_id < 2:
+    while player_id < 2:   #tworzenie osobnych watkow
         conn, addr = server.accept()
         print(f"[SERVER] Gracz {player_id} połączony z {addr}")
         thread = threading.Thread(target=handle_client, args=(conn, player_id))

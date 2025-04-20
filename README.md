@@ -29,6 +29,6 @@ cd Statki
 ### Uruchamianie aplikacji
 ```
 python3 server.py
-python3 client_gui (pierwszy gracz)
-python3 client_gui (drugi gracz)
+python3 client_gui.py (pierwszy gracz)
+python3 client_gui.py (drugi gracz)
 ```

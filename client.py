@@ -1,9 +1,11 @@
-import socket
 import json
+import socket
+
 from game_logic import place_all_ships_manual, print_board
 
-HOST = 'localhost'
+HOST = "localhost"
 PORT = 5555
+
 
 def main():
     print("🔌 Łączenie z serwerem...")
@@ -14,10 +16,7 @@ def main():
     board, ships = place_all_ships_manual()
 
     # 2. Wyślij planszę i listę statków do serwera
-    data = {
-        "board": board,
-        "ships": ships
-    }
+    data = {"board": board, "ships": ships}
     client.sendall(json.dumps(data).encode())
 
     # 3. Odbierz info od serwera
@@ -60,6 +59,7 @@ def main():
             break
 
     client.close()
+
 
 if __name__ == "__main__":
     main()

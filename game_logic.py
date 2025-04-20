@@ -9,7 +9,7 @@ def can_place_ship(board, x, y, size, direction):
             for i in range(size):
                 if board[y - 1][x + i] != "~":
                     return False
-        if y != 9: 
+        if y != 9:
             for i in range(size):
                 if board[y + 1][x + i] != "~":
                     return False
@@ -47,6 +47,7 @@ def can_place_ship(board, x, y, size, direction):
                     return False
     return True
 
+
 def check_hit(board, x, y):
     if board[y][x] == "S":
         board[y][x] = "X"
@@ -55,11 +56,13 @@ def check_hit(board, x, y):
         board[y][x] = "O"
     return False
 
+
 def all_ships_sunk(board):
     for row in board:
         if "S" in row:
             return False
     return True
+
 
 def is_ship_sunk(ships, board, x, y):
     for ship in ships:
@@ -70,8 +73,10 @@ def is_ship_sunk(ships, board, x, y):
             return True
     return False
 
+
 def create_empty_board():
     return [["~" for _ in range(10)] for _ in range(10)]
+
 
 def place_ship(board, x, y, size, direction):
     coords = []
@@ -85,4 +90,3 @@ def place_ship(board, x, y, size, direction):
     for cy, cx in coords:
         board[cy][cx] = "S"
     return coords
-

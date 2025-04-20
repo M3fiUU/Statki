@@ -1,8 +1,9 @@
+import json
 import socket
 import threading
-import json
 import time
-from game_logic import check_hit, all_ships_sunk, is_ship_sunk
+
+from game_logic import all_ships_sunk, check_hit, is_ship_sunk
 
 HOST = "0.0.0.0"
 PORT = 5555
@@ -17,14 +18,15 @@ def send_json(conn, obj):
     message = json.dumps(obj) + "\n"
     conn.sendall(message.encode())
 
-def handle_client(conn, player_id): #jeden gracz odbiera dane
+
+def handle_client(conn, player_id):  # jeden gracz odbiera dane
     global turn
     try:
         data = conn.recv(8192).decode()
         parsed = json.loads(data)
-    
-        boards[player_id] = parsed['board']
-        ships[player_id] = parsed['ships']
+
+        boards[player_id] = parsed["board"]
+        ships[player_id] = parsed["ships"]
         clients[player_id] = conn
         print(f"[SERVER] Plansza i statki odebrane od gracza {player_id}.")
 
@@ -37,7 +39,9 @@ def handle_client(conn, player_id): #jeden gracz odbiera dane
                 if pid == 0:
                     send_json(clients[pid], {"msg": "Twoja tura"})
                 else:
-                    send_json(clients[pid], {"msg": "Tura przeciwnika"})  #czyja tura 
+                    send_json(
+                        clients[pid], {"msg": "Tura przeciwnika"}
+                    )  # czyja tura
 
         game_over = False
         while not game_over:
@@ -46,7 +50,7 @@ def handle_client(conn, player_id): #jeden gracz odbiera dane
                 continue
 
             try:
-                shot_data = conn.recv(1024).decode() #odbieranie dancych
+                shot_data = conn.recv(1024).decode()  # odbieranie dancych
                 if not shot_data.strip():
                     break
                 shot = json.loads(shot_data)
@@ -56,7 +60,9 @@ def handle_client(conn, player_id): #jeden gracz odbiera dane
 
                 hit = check_hit(boards[1 - player_id], x, y)
                 if hit:
-                    if is_ship_sunk(ships[1 - player_id], boards[1 - player_id], x, y):
+                    if is_ship_sunk(
+                        ships[1 - player_id], boards[1 - player_id], x, y
+                    ):
                         result = "trafiony zatopiony"
                     else:
                         result = "trafiony"
@@ -64,23 +70,32 @@ def handle_client(conn, player_id): #jeden gracz odbiera dane
                     result = "pudło"
 
                 send_json(conn, {"msg": result, "x": x, "y": y})
-                send_json(clients[1 - player_id], {
-                    "msg": f"{result.capitalize()} w ({x}, {y})",
-                    "hit": hit,
-                    "x": x,
-                    "y": y
-                })
+                send_json(
+                    clients[1 - player_id],
+                    {
+                        "msg": f"{result.capitalize()} w ({x}, {y})",
+                        "hit": hit,
+                        "x": x,
+                        "y": y,
+                    },
+                )
 
                 if all_ships_sunk(boards[1 - player_id]):
                     print(f"[SERVER] Gracz {player_id} wygrał!")
                     send_json(conn, {"msg": "Wygrałeś!", "x": x, "y": y})
-                    send_json(clients[1 - player_id], {"msg": "Przegrałeś.", "x": x, "y": y})
+                    send_json(
+                        clients[1 - player_id],
+                        {"msg": "Przegrałeś.", "x": x, "y": y},
+                    )
                     game_over = True
                     continue
 
                 turn = 1 - player_id
                 send_json(clients[turn], {"msg": "Twoja tura"})
-                send_json(clients[player_id], {"msg": f"{result.capitalize()}! Tura przeciwnika"})
+                send_json(
+                    clients[player_id],
+                    {"msg": f"{result.capitalize()}! Tura przeciwnika"},
+                )
 
             except Exception as e:
                 print(f"[SERVER] Błąd podczas strzału: {e}")
@@ -92,19 +107,21 @@ def handle_client(conn, player_id): #jeden gracz odbiera dane
         conn.close()
         print(f"[SERVER] Gracz {player_id} rozłączony.")
 
+
 def start():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #socket tcp
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # socket tcp
     server.bind((HOST, PORT))
     server.listen(2)
     print(f"[SERVER] Serwer działa na {HOST}:{PORT}")
 
     player_id = 0
-    while player_id < 2:   #tworzenie osobnych watkow
+    while player_id < 2:  # tworzenie osobnych watkow
         conn, addr = server.accept()
         print(f"[SERVER] Gracz {player_id} połączony z {addr}")
         thread = threading.Thread(target=handle_client, args=(conn, player_id))
         thread.start()
         player_id += 1
+
 
 if __name__ == "__main__":
     start()
